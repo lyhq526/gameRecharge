@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星火生态兑换系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        @media screen and (max-width: 750px) {
+            .box {
+                width: 100%;
+            }
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        #app {
+            display: flex;
+            justify-content: center;
+        }
+
+        .box {
+            width: 750px;
+            background: coral;
+        }
+
+        .box-head {
+            text-align: center;
+            font-size: 2.6rem;
+        }
+
+        .tabs {
+            font-size: 1.8rem;
+            display: flex;
+            cursor: pointer;
+            width: 100%;
+            line-height: 46px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tabs>p {
+            width: 49%;
+            text-align: center;
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .changeFrom {
+            padding: 20px;
+        }
+
+        .tipFont {
+            margin-left: 1rem;
+            color: red;
+            font-size: 12px;
+        }
+
+        .submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .submit>p {
+            width: 50%;
+            border-radius: 20px;
+            background: #ffffff;
+            color: #000000;
+            line-height: 40px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .selectFormData {
+            padding: 20px;
+        }
+
+        .selectList {
+            padding: 20px;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .selectList>p:nth-child(1) {
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .selectList>p:nth-child(2) {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .selectList-list {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+            font-size: 14px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selectList-list>p:nth-child(1) {
+            width: 70px;
+            text-align: center;
+        }
+
+        .selectList-list>p:nth-child(3) {
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .selectList-list>div {
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .selectList-list>div>p:nth-child(2) {
+            position: absolute;
+            min-width: 70px;
+            text-align: center;
+            top: 20px;
+            font-size: 12px;
+            color: red;
+            right: 0;
+        }
+        .footer{
+            margin-top: 20px;
+        }
+        .footer>p{
+            /* display: flex;
+            align-items: center;
+            flex-wrap: wrap; */
+        }
+        .footer>p>span{
+            color: red;
+        }
+        /* .selectList-list>div {
+            position: absolute;
+            top: 20px;
+            font-size: 12px;
+            color: red;
+            right: 0;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="box">
+            <div class="box-head">
+                星火生态兑换系统
+            </div>
+            <div class="content">
+                <div class="tabs">
+                    <p @click="changeTab('1')">星火兑换</p>
+                    <p @click="changeTab('2')">订单查询</p>
+                </div>
+                <div class="changeFrom" v-if="tabs=='1'">
+                    <el-form label-position="top" label-width="80px" :model="formData">
+                        <el-form-item label="缔星账号(手机号)">
+                            <div style="display: flex;">
+                                <el-input v-model="formData.phone" style="width: 60%;"></el-input>
+                                <span class="tipFont">*请填写手机号</span>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="游戏名称">
+                            <div style="display: flex;">
+                                <el-select v-model="formData.game" placeholder="请选择" style="width: 60%;">
+                                    <el-option v-for="item in options" :key="item.value" :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                                <span class="tipFont">*请选择游戏名称</span>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="游戏账号(ID)">
+                            <div style="display: flex;">
+                                <el-input v-model="formData.gameUserId" style="width: 60%;"></el-input>
+                                <span class="tipFont">*请填写游戏账号(ID)</span>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="兑换元宝数量">
+                            <div style="display: flex;">
+                                <el-input-number v-model="formData.Ingots" :min="5" label="描述文字" :step="5"
+                                    :step-strictly="true" style="width: 60%;"></el-input-number>
+                                <div style="margin-left:1rem;">
+                                    <p>所需星火：{{formData.Ingots/10 || 0}}</p>
+                                    <!-- <p class="tipFont" style="margin-left: 0;">{{formData.Ingots/10 || 1}}星火等于{{formData.Ingots || 10}}游戏元宝</p> -->
+                                </div>
+                            </div>
+                        </el-form-item>
+                    </el-form>
+                    <div class="submit">
+                        <p @click="add">提交订单</p>
+                    </div>
+                    <div class="footer">
+                        <p>1、请保证您有足够的星火，否则将会导致兑换失败。</p>
+                        <p>2、提交订单后，每日兑换到账时间为每日<span>8:00-9:00</span> ; <span>14:00-15:00</span> ;
+                            <span>20:00-21:00</span> 。具体兑换进度可在“订单查询”中查看。</p>
+                        <p>3、如有问题，可联系缔星微信客服：xxxxxx</p>
+                    </div>
+                </div>
+                <div v-if="tabs=='2'" class="selectFormData">
+                    <el-form label-position="top" label-width="80px" :model="selectFormData">
+                        <el-form-item label="缔星账号(手机号)">
+                            <div style="display: flex;">
+                                <el-input v-model="selectFormData.phone" style="width: 60%;"></el-input>
+                                <span class="tipFont">*请填写手机号</span>
+                            </div>
+                        </el-form-item>
+                    </el-form>
+                    <div class="submit">
+                        <p @click="selectOrder">订单查询</p>
+                    </div>
+                    <div class="selectList">
+                        <p>查询结果</p>
+                        <p>(仅显示近10笔兑换记录)</p>
+                        <div class="selectList-list">
+                            <p>兑换元宝数</p>
+                            <p>提交时间</p>
+                            <p>兑换状态</p>
+                        </div>
+                        <div class="selectList-list" v-for="item in orderList" :key="item._id">
+                            <p>{{item.Ingots}}</p>
+                            <p>{{dateFormat('YYYY-mm-dd HH:MM:SS',new Date(item.createTime))}}</p>
+                            <div>
+                                <p>{{item.status=="1"?'兑换中':item.status=="2"?'兑换成功':"兑换失败"}}</p>
+                                <p v-show="item.status=='-1'">{{item.errorText}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                formData: {},
+                tabs: "1",
+                selectFormData: {},
+                orderList: [],
+                options: [
+                    {
+                        label: "DNF",
+                        value: "DNF"
+                    }
+                ],
+            },
+            mounted() {
+                if (document.body.clientWidth > 750) {
+                    document.body.style.fontSize = '20px';
+                } else {
+                    document.body.style.fontSize = '12px';
+                }
+            },
+            methods: {
+                dateFormat(fmt, date) {
+                    let ret;
+                    const opt = {
+                        "Y+": date.getFullYear().toString(), // 年
+                        "m+": (date.getMonth() + 1).toString(), // 月
+                        "d+": date.getDate().toString(), // 日
+                        "H+": date.getHours().toString(), // 时
+                        "M+": date.getMinutes().toString(), // 分
+                        "S+": date.getSeconds().toString(), // 秒
+                        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+                    };
+                    for (let k in opt) {
+                        ret = new RegExp("(" + k + ")").exec(fmt);
+                        if (ret) {
+                            fmt = fmt.replace(
+                                ret[1],
+                                ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, "0")
+                            );
+                        }
+                    }
+                    return fmt;
+                },
+                changeTab(val) {
+                    this.tabs = val;
+                    this.formData = {};
+                    this.selectFormData = {}
+                    this.orderList = []
+                },
+                selectOrder() {
+                    if (this.selectFormData.phone == "" || this.selectFormData.phone.length !== 11) return
+                    let pram = {
+                        phone: this.selectFormData.phone,
+                    }
+                    fetch('http://api.lidaxian.cn/api/list ', {
+                        body: JSON.stringify(pram),
+                        method: "POST",
+                        headers: { "Content-Type": "application/json;charset=UTF-8", "Accept": "application/json, text/plain, */*", "platform": "PC", "use-env": "dev" }
+                    })
+                        .then(function (response) {
+                            return response.json()
+                        }).then(res => {
+                            if (res.code == 200) {
+                                this.orderList = res.data
+                            } else {
+                                this.$message({
+                                    message: res.message,
+                                    type: 'error'
+                                });
+                            }
+                        })
+                },
+                add() {
+                    if (this.formData.phone == "" || this.formData.phone.length !== 11) return;
+                    if (this.formData.game == "") return;
+                    if (this.formData.gameUserId == "") return;
+                    if (this.formData.Ingots == "") return
+                    let pram = {
+                        phone: this.formData.phone,
+                        game: this.formData.game,
+                        gameUserId: this.formData.gameUserId,
+                        Ingots: this.formData.Ingots,
+                    }
+                    fetch('http://api.lidaxian.cn/api/addList ', {
+                        body: JSON.stringify(pram),
+                        method: "POST",
+                        headers: { "Content-Type": "application/json;charset=UTF-8", "Accept": "application/json, text/plain, */*", "platform": "PC", "use-env": "dev" }
+                    })
+                        .then(function (response) {
+                            return response.json()
+                        }).then(res => {
+                            if (res.code == 200) {
+                                this.$message({
+                                    message: '订单已提交',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.$message({
+                                    message: res.message,
+                                    type: 'error'
+                                });
+                            }
+                        })
+                },
+            }
+        })
+    </script>
+
+</body>
+
+</html>
